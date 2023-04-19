@@ -6,4 +6,6 @@ It generates a file called "report.txt" in the path where the tool code is locat
 
 At the same time, a "temp.csv" file will be created, which is used for efficiency reasons, since the searches are made on the RAW of a parsed MFT and stored in this file. I have left it in case you want to consult the results obtained in CSV with all the columns of a MFT, as it is obtained by "mftdump".
 
+USAGE: ./mftcarver ./parsed_mft_file.tsv
+
 This is free software and can be redistributed as such.  
