@@ -4,7 +4,8 @@
 		param(
 			[Parameter(Mandatory=$true)]
 			[string]$inputFile,
-			[switch]$s
+			[switch]$s,
+            [string]$d
 			 )
 		 
 	#------------------------------------------------------------
@@ -18,13 +19,13 @@
 
 	#USE REGEX VERSUS RAW MFT CSV & EXPORT TO TEMPORAL TSV
 
-		 $raw_content = Get-Content -First 1 $inputfile | Out-File ./reports/$modulename.tsv; Select-String -Pattern $regex $inputfile | ForEach-Object {$_.Line} | Out-File ./reports/$modulename.tsv -Append
+		 $raw_content = Get-Content -First 1 $inputfile | Out-File $d/$modulename.tsv; Select-String -Pattern $regex $inputfile | ForEach-Object {$_.Line} | Out-File $d/$modulename.tsv -Append
 
 	#------------------------------------------------------------
 
 	#SET SOURCE CSV
 
-		$importdata = Import-Csv -Delimiter "`t" -Path ./reports/$modulename.tsv 
+		$importdata = Import-Csv -Delimiter "`t" -Path $d/$modulename.tsv 
 
 	#-------------------------------------------------------------
 
@@ -39,19 +40,19 @@
 
 	#STDOUT OUTPUT
 		
-		Write-Output "" | Tee-Object -FilePath "./reports/report.txt" -Append
-		Write-Output "==========================================" | Tee-Object -FilePath "./reports/report.txt" -Append
-		Write-Output "AUTORUNS MODULE RESULTS" | Tee-Object -FilePath "./reports/report.txt" -Append
-		Write-Output "==========================================" | Tee-Object -FilePath "./reports/report.txt" -Append
-		Write-Output "" | Tee-Object -FilePath "./reports/report.txt" -Append
+		Write-Output "" | Tee-Object -FilePath "$d/report.txt" -Append
+		Write-Output "==========================================" | Tee-Object -FilePath "$d/report.txt" -Append
+		Write-Output "AUTORUNS MODULE RESULTS" | Tee-Object -FilePath "$d/report.txt" -Append
+		Write-Output "==========================================" | Tee-Object -FilePath "$d/report.txt" -Append
+		Write-Output "" | Tee-Object -FilePath "$d/report.txt" -Append
 		
 		if ($results.Count -gt 0) {
-		$results | Sort-Object -Property "fnModTime (UTC)" | Format-Table -Wrap -AutoSize -Property @{Label="MFT Entry"; Expression={$_.RecNo}}, @{Label="Deleted?"; Expression={$_.Deleted}}, @{Label="File Location"; Expression={($_.FullPath)}}, @{Label="fnModTime"; Expression={$_."fnModTime (UTC)"}}, @{Label="fnCreateTime"; Expression={$_."fnCreateTime (UTC)"}} | Tee-Object -Variable result | Out-File -FilePath "./reports/report.txt" -Append -Width ([int]::MaxValue) ; $result
+		$results | Sort-Object -Property "fnModTime (UTC)" | Format-Table -Wrap -AutoSize -Property @{Label="MFT Entry"; Expression={$_.RecNo}}, @{Label="Deleted?"; Expression={$_.Deleted}}, @{Label="File Location"; Expression={($_.FullPath)}}, @{Label="fnModTime"; Expression={$_."fnModTime (UTC)"}}, @{Label="fnCreateTime"; Expression={$_."fnCreateTime (UTC)"}} | Tee-Object -Variable result | Out-File -FilePath "$d/report.txt" -Append -Width ([int]::MaxValue) ; $result
 		} else {
-			Write-Output "" | Tee-Object -FilePath "./reports/report.txt" -Append
-			Write-Output "No entries found matching criteria" | Tee-Object -FilePath "./reports/report.txt" -Append
-			Write-Output "" | Tee-Object -FilePath "./reports/report.txt" -Append
-			Write-Output "" | Tee-Object -FilePath "./reports/report.txt" -Append
+			Write-Output "" | Tee-Object -FilePath "$d/report.txt" -Append
+			Write-Output "No entries found matching criteria" | Tee-Object -FilePath "$d/report.txt" -Append
+			Write-Output "" | Tee-Object -FilePath "$d/report.txt" -Append
+			Write-Output "" | Tee-Object -FilePath "$d/report.txt" -Append
 		}
 		
 	#------------------------------------------------------------

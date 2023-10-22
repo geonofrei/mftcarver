@@ -1,10 +1,15 @@
+  param (
+    [string]$mftfile,
+    [string]$output="./reports"
+)
+
 clear
 
 #CHECKS IF PARSED-MFT TSV FILE IS PROVIDED
 
-if ($args.Count -lt 1) {
+if (-not $mftfile) {
 	Write-Output ""
-    Write-Output "You need to provide MFT file in TSV format as parameter!! (mftdump tool) Usage: .\mftcarver.ps1 .\lamft.tsv"
+    Write-Output "You need to provide MFT file in TSV format as parameter!! (mftdump tool) Usage: .\mftcarver.ps1 .\lamft.tsv .\output"
 	Write-Output ""
     exit
 }
@@ -12,8 +17,6 @@ if ($args.Count -lt 1) {
 #--------------------------------------------
 
 #cHECKS IF MFT FILE EXISTS
-
-$mftfile = $args[0]
 
 if (-not (Test-Path $mftfile)) {
 	Write-Output ""
@@ -26,9 +29,12 @@ if (-not (Test-Path $mftfile)) {
 
 do {
 
-if (Test-Path "./reports/*") {
+if (Test-Path $output) {
  
-	Remove-Item "./reports/*" -Force
+	Remove-Item $output/* -Force
+
+} else {
+    mkdir $output
 }
 
 		
@@ -57,7 +63,10 @@ Write-Output ""
 Write-Output "Author: George-Emilian Onofrei, 2023"
 Write-Output ""
 
-Get-ChildItem -Path ./modules/ -Filter *.ps1 | ForEach-Object { & $_.FullName $mftfile -s}
+$ScriptDirectorio = $PSScriptRoot
+$ModulesDirectorio = Join-Path $ScriptDirectorio "modules"
+
+Get-ChildItem -Path $ModulesDirectorio/ -Filter *.ps1 | ForEach-Object { & $_.FullName $mftfile -s $output}
 			
 function Press-Key {
 			Write-Output "Finished! Press any key to exit..."
